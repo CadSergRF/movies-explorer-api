@@ -1,5 +1,7 @@
 const { Schema, model } = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcryptjs');
+const AuthError = require('../errors/Auth.error');
 
 const userSchema = new Schema(
   {
@@ -10,7 +12,7 @@ const userSchema = new Schema(
     },
     email: {
       type: String,
-      required: [true, 'Поле "email" должно быть заполнено'],
+      required: [true, 'Полу "email" долдно быть заполнено'],
       unique: true,
       validate: {
         validator: (email) => validator.isEmail(email),
@@ -25,6 +27,24 @@ const userSchema = new Schema(
   },
   {
     versionKey: false,
+    statics: {
+      findUserByCredentials(email, password) {
+        return this.findOne({ email }).select('+password')
+          .then((user) => {
+            if (!user) {
+              throw new AuthError('Неправильные почта или пароль');
+            }
+            // Сравниваем пароли
+            return bcrypt.compare(password, user.password)
+              .then((matched) => {
+                if (!matched) {
+                  throw new AuthError('Неправильные почта или пароль');
+                }
+                return user;
+              });
+          });
+      },
+    },
   },
 );
 

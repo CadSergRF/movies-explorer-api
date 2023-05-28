@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const express = require('express');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 
 const allRoutes = require('./routes/index');
 
@@ -16,6 +17,7 @@ mongoose.connect(DATABASE);
 
 app
   .use(express.json())
+  .use(cookieParser())
   .use('/', allRoutes)
   .use(errors);
 

@@ -1,6 +1,6 @@
 const router = require('express').Router();
 
-const { urlNotFound } = require('../contorllers/notFound.controller');
+const { urlNotFound } = require('../controllers/notFound.controller');
 
 router.use('/*', urlNotFound);
 

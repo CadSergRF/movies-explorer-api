@@ -5,7 +5,7 @@ const { CREATED_CODE } = require('../utils/constants');
 // const ForbiddenError = require('../errors/Forbidden.error');
 const BadRequestError = require('../errors/BadRequest.error');
 const NotFoundError = require('../errors/NotFound.error');
-/* eslint-disable no-unused-vars */
+
 module.exports.getMovies = (req, res, next) => {
   Movie
     .find({})
@@ -35,7 +35,6 @@ module.exports.deleteMovie = (req, res, next) => {
   Movie
     .findById(req.params.id)
     .then((movie) => {
-      console.log(movie);
       if (!movie) {
         throw new NotFoundError('Фильм не найден');
       }
@@ -47,7 +46,6 @@ module.exports.deleteMovie = (req, res, next) => {
         .catch(next);
     })
     .catch((err) => {
-      console.log(err);
       if (err.name === 'CastError') {
         next(new BadRequestError('Передан не корректный id для удаления фильма'));
       } else {

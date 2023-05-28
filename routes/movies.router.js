@@ -4,7 +4,7 @@ const {
   getMovies,
   createMovie,
   deleteMovie,
-} = require('../contorllers/movies.controller');
+} = require('../controllers/movies.controller');
 
 // возвращает все сохранённые текущим  пользователем фильмы
 router.get('/', getMovies);
