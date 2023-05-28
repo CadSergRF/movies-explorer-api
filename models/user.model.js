@@ -23,6 +23,9 @@ const userSchema = new Schema(
       select: false,
     },
   },
+  {
+    versionKey: false,
+  },
 );
 
 module.exports = model('user', userSchema);

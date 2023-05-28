@@ -21,6 +21,7 @@ const movieSchema = new Schema(
     },
     image: {
       type: String,
+      required: [true, 'Поле "Постер" должно быть заполнено'],
       validate: {
         validator: (url) => validator.isURL(url),
         message: '"Постер к фильму" - не корректный URL',
@@ -28,6 +29,7 @@ const movieSchema = new Schema(
     },
     trailerLink: {
       type: String,
+      required: [true, 'Поле "Трейлер фильма" должно быть заполнено'],
       validate: {
         validator: (url) => validator.isURL(url),
         message: '"Трейлер фильма" - не корректный URL',
@@ -35,6 +37,7 @@ const movieSchema = new Schema(
     },
     thumbnail: {
       type: String,
+      required: [true, 'Поле "Мини постер" должно быть заполнено'],
       validate: {
         validator: (url) => validator.isURL(url),
         message: '"Изображение постера к фильму" - не корректный URL',
@@ -52,7 +55,7 @@ const movieSchema = new Schema(
       type: String,
       required: [true, 'Поле "Название фильма (русский)" должно быть заполнено'],
       validate: {
-        validator: (name) => validator.isAlphanumeric(name, 'ru-RU'),
+        validator: (name) => validator.isAlphanumeric(name, 'ru-RU', { ignore: ' -!?:;' }),
         message: '"Название фильма (русский)" - не корректное название',
       },
     },
@@ -60,11 +63,14 @@ const movieSchema = new Schema(
       type: String,
       required: [true, 'Поле "Название фильма (english)" должно быть заполнено'],
       validate: {
-        validator: (name) => validator.isAlphanumeric(name, 'en-US'),
+        validator: (name) => validator.isAlphanumeric(name, 'en-US', { ignore: ' -!?:;' }),
         message: '"Название фильма (english)" - не корректное название',
       },
     },
   },
+  {
+    versionKey: false,
+  },
 );
 
-module.exports = model('user', movieSchema);
+module.exports = model('movie', movieSchema);
