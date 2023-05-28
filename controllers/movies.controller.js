@@ -2,7 +2,7 @@ const Movie = require('../models/movie.model');
 
 const { CREATED_CODE } = require('../utils/constants');
 
-// const ForbiddenError = require('../errors/Forbidden.error');
+const ForbiddenError = require('../errors/Forbidden.error');
 const BadRequestError = require('../errors/BadRequest.error');
 const NotFoundError = require('../errors/NotFound.error');
 
@@ -38,9 +38,9 @@ module.exports.deleteMovie = (req, res, next) => {
       if (!movie) {
         throw new NotFoundError('Фильм не найден');
       }
-      // if (!movie.owner.equals(req.user._id)) {
-      //   throw new ForbiddenError('Вы не можете удалять фильмы');
-      // }
+      if (!movie.owner.equals(req.user._id)) {
+        throw new ForbiddenError('Вы не можете удалять фильмы');
+      }
       return Movie.deleteOne(movie._id)
         .then(() => res.send({ message: 'Фильм удален' }))
         .catch(next);

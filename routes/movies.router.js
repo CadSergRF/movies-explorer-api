@@ -6,15 +6,20 @@ const {
   deleteMovie,
 } = require('../controllers/movies.controller');
 
+const {
+  movieIdValidation,
+  movieBodyValidation,
+} = require('../middlewares/celebrateValidation.middleware');
+
 // возвращает все сохранённые текущим  пользователем фильмы
 router.get('/', getMovies);
 
 // создаёт фильм с переданными в теле
 // country, director, duration, year, description, image, trailer
 // nameRU, nameEN и thumbnail, movieId
-router.post('/', createMovie);
+router.post('/', movieBodyValidation, createMovie);
 
 // удаляет сохранённый фильм по id
-router.delete('/:id', deleteMovie);
+router.delete('/:id', movieIdValidation, deleteMovie);
 
 module.exports = router;
