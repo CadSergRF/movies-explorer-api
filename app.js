@@ -12,10 +12,12 @@ const errors = require('./middlewares/errors.middleware');
 const { requestLogger, errorLogger } = require('./middlewares/logger.middleware');
 const rateLimiter = require('./middlewares/rateLimiter.middleware');
 
+const ALLOWED_CORS = require('./utils/constants');
+
 const app = express();
 
 const PORT = process.env.PORT || 5000;
-const { DATABASE, ALLOWED_CORS } = process.env;
+const DATABASE = process.env.DATABASE || 'mongodb://127.0.0.1:27017/bitfilmsdb';
 
 mongoose.connect(DATABASE);
 
@@ -29,12 +31,9 @@ app
   .use(rateLimiter)
   .use(cookieParser())
   .use(requestLogger)
-  .use('/', allRoutes)
+  .use('/api', allRoutes)
   .use(errorLogger)
   .use(celebrateErrors())
   .use(errors);
 
-app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
-  console.log(`App listen port - ${PORT}`);
-});
+app.listen(PORT);

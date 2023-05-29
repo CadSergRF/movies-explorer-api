@@ -14,8 +14,32 @@ module.exports.getMovies = (req, res, next) => {
 };
 
 module.exports.createMovie = (req, res, next) => {
+  const {
+    country,
+    director,
+    duration,
+    year,
+    image,
+    trailerLink,
+    thumbnail,
+    movieId,
+    nameRU,
+    nameEN,
+  } = req.body;
   Movie
-    .create(req.body)
+    .create({
+      country,
+      director,
+      duration,
+      year,
+      image,
+      trailerLink,
+      thumbnail,
+      movieId,
+      nameRU,
+      nameEN,
+      owner: req.user._id,
+    })
     .then((movie) => {
       res.status(CREATED_CODE).send(movie);
     })
@@ -38,10 +62,10 @@ module.exports.deleteMovie = (req, res, next) => {
       if (!movie) {
         throw new NotFoundError('Фильм не найден');
       }
-      if (!movie.owner.equals(req.user._id)) {
+      if (movie.owner !== req.user._id) {
         throw new ForbiddenError('Вы не можете удалять фильмы');
       }
-      return Movie.deleteOne(movie._id)
+      return Movie.deleteOne(movie)
         .then(() => res.send({ message: 'Фильм удален' }))
         .catch(next);
     })
