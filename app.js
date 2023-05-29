@@ -17,7 +17,7 @@ const ALLOWED_CORS = require('./utils/constants');
 const app = express();
 
 const PORT = process.env.PORT || 5000;
-const DATABASE = process.env.DATABASE || 'mongodb://127.0.0.1:27017/bitfilmsdb';
+const { DATABASE } = process.env;
 
 mongoose.connect(DATABASE);
 
@@ -28,10 +28,10 @@ app
     credentials: true,
   }))
   .use(helmet())
-  .use(rateLimiter)
   .use(cookieParser())
   .use(requestLogger)
-  .use('/api', allRoutes)
+  .use(rateLimiter)
+  .use('/', allRoutes)
   .use(errorLogger)
   .use(celebrateErrors())
   .use(errors);

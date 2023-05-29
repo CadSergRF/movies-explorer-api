@@ -3,7 +3,13 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/user.model');
 
-const { CREATED_CODE } = require('../utils/constants');
+const {
+  CREATED_CODE,
+  BAD_REQUEST_MESSAGE_DATA,
+  BAD_REQUEST_MESSAGE_ID,
+  DUPLICATE_MESSAGE_EMAIL,
+  NOT_FOUND_MESSAGE_USER,
+} = require('../utils/constants');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -16,13 +22,13 @@ module.exports.getUser = (req, res, next) => {
     .findById(req.user._id)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('UserController: Пользователь с указанным id не найден');
+        throw new NotFoundError(`${NOT_FOUND_MESSAGE_USER}`);
       }
       res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('UserController: Передан не корректный id пользователя'));
+        next(new BadRequestError(`${BAD_REQUEST_MESSAGE_ID}`));
       } else {
         next(err);
       }
@@ -49,14 +55,14 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.code === 11000) {
-        next(new DublicateErrors('Пользователь с указанным email уже зарегистрирован.'));
+        next(new DublicateErrors(`${DUPLICATE_MESSAGE_EMAIL}`));
         return;
       }
       if (err.name === 'ValidationError') {
         const errorMessage = Object.values(err.errors)
           .map((error) => error.message)
           .join(' ');
-        next(new BadRequestError(`Не корректные данные при создании пользователя ${errorMessage}`));
+        next(new BadRequestError(`${BAD_REQUEST_MESSAGE_DATA} ${errorMessage}`));
       } else {
         next(err);
       }
@@ -83,7 +89,7 @@ module.exports.login = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Ошибка авторизации'));
+        next(new BadRequestError(`${BAD_REQUEST_MESSAGE_ID}`));
       } else {
         next(err);
       }
@@ -95,24 +101,22 @@ module.exports.logout = (req, res) => {
 };
 
 module.exports.changeUserInfo = (req, res, next) => {
+  const { email, name } = req.body;
   User
-    .findByIdAndUpdate(req.user._id, req.body, { new: true, runValidators: true })
+    .findByIdAndUpdate(req.user._id, { email, name }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('UserController: Ошибка обновления профиля. Пользователь не найден.');
+        throw new NotFoundError(`${NOT_FOUND_MESSAGE_USER}`);
       }
       res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        const errorMessage = Object.values(err.errors)
-          .map((error) => error.message)
-          .join(' ');
-        next(new BadRequestError(`UserController: Не корректные данные для обновления профиля ${errorMessage}`));
+      if (err.code === 11000) {
+        next(new DublicateErrors(`${DUPLICATE_MESSAGE_EMAIL}`));
         return;
       }
       if (err.name === 'CastError') {
-        next(new BadRequestError('UserController: Не корректный id. Пользователь не найден'));
+        next(new BadRequestError(`${BAD_REQUEST_MESSAGE_ID}`));
       } else {
         next(err);
       }

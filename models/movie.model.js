@@ -16,8 +16,12 @@ const movieSchema = new Schema(
       required: [true, 'Поле "Длительность фильма" должно быть заполнено'],
     },
     year: {
-      type: Number,
+      type: String,
       required: [true, 'Поле "Год выпуска фильма" должно быть заполнено'],
+    },
+    description: {
+      type: String,
+      required: [true, 'Поле "Описание" должно быть заполнено'],
     },
     image: {
       type: String,
@@ -44,7 +48,8 @@ const movieSchema = new Schema(
       },
     },
     owner: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: 'user',
       required: [true, 'Поле "Id пользователя" должно быть заполнено'],
     },
     movieId: {
@@ -54,18 +59,10 @@ const movieSchema = new Schema(
     nameRU: {
       type: String,
       required: [true, 'Поле "Название фильма (русский)" должно быть заполнено'],
-      validate: {
-        validator: (name) => validator.isAlphanumeric(name, 'ru-RU', { ignore: ' -!?:;' }),
-        message: '"Название фильма (русский)" - не корректное название',
-      },
     },
     nameEN: {
       type: String,
       required: [true, 'Поле "Название фильма (english)" должно быть заполнено'],
-      validate: {
-        validator: (name) => validator.isAlphanumeric(name, 'en-US', { ignore: ' -!?:;' }),
-        message: '"Название фильма (english)" - не корректное название',
-      },
     },
   },
   {

@@ -1,6 +1,12 @@
 const Movie = require('../models/movie.model');
 
-const { CREATED_CODE } = require('../utils/constants');
+const {
+  CREATED_CODE,
+  BAD_REQUEST_MESSAGE_DATA,
+  BAD_REQUEST_MESSAGE_ID,
+  FORBIDDEN_MESSAGE,
+  NOT_FOUND_MESSAGE_MOVIE,
+} = require('../utils/constants');
 
 const ForbiddenError = require('../errors/Forbidden.error');
 const BadRequestError = require('../errors/BadRequest.error');
@@ -8,7 +14,7 @@ const NotFoundError = require('../errors/NotFound.error');
 
 module.exports.getMovies = (req, res, next) => {
   Movie
-    .find({})
+    .find({ owner: req.user._id })
     .then((movies) => res.send(movies))
     .catch(next);
 };
@@ -19,6 +25,7 @@ module.exports.createMovie = (req, res, next) => {
     director,
     duration,
     year,
+    description,
     image,
     trailerLink,
     thumbnail,
@@ -32,6 +39,7 @@ module.exports.createMovie = (req, res, next) => {
       director,
       duration,
       year,
+      description,
       image,
       trailerLink,
       thumbnail,
@@ -48,7 +56,7 @@ module.exports.createMovie = (req, res, next) => {
         const errorMessage = Object.values(err.errors)
           .map((error) => error.message)
           .join(' ');
-        next(new BadRequestError(`Не корректные данные при создании карточки ${errorMessage}`));
+        next(new BadRequestError(`${BAD_REQUEST_MESSAGE_DATA} ${errorMessage}`));
       } else {
         next(err);
       }
@@ -60,10 +68,10 @@ module.exports.deleteMovie = (req, res, next) => {
     .findById(req.params.id)
     .then((movie) => {
       if (!movie) {
-        throw new NotFoundError('Фильм не найден');
+        throw new NotFoundError(`${NOT_FOUND_MESSAGE_MOVIE}`);
       }
       if (movie.owner !== req.user._id) {
-        throw new ForbiddenError('Вы не можете удалять фильмы');
+        throw new ForbiddenError(`${FORBIDDEN_MESSAGE}`);
       }
       return Movie.deleteOne(movie)
         .then(() => res.send({ message: 'Фильм удален' }))
@@ -71,7 +79,7 @@ module.exports.deleteMovie = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Передан не корректный id для удаления фильма'));
+        next(new BadRequestError(`${BAD_REQUEST_MESSAGE_ID}`));
       } else {
         next(err);
       }
