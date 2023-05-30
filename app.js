@@ -12,14 +12,14 @@ const errors = require('./middlewares/errors.middleware');
 const { requestLogger, errorLogger } = require('./middlewares/logger.middleware');
 const rateLimiter = require('./middlewares/rateLimiter.middleware');
 
-const ALLOWED_CORS = require('./utils/constants');
+const ALLOWED_CORS = require('./utils/cors.constants');
 
 const app = express();
 
-const PORT = process.env.PORT || 5000;
-const { DATABASE } = process.env;
+const { PORT, DATABASE } = process.env;
+const { DEFAULT_PORT, DEFAULT_DATABASE } = require('./utils/config.constants');
 
-mongoose.connect(DATABASE);
+mongoose.connect(DATABASE || DEFAULT_DATABASE);
 
 app
   .use(express.json())
@@ -36,4 +36,4 @@ app
   .use(celebrateErrors())
   .use(errors);
 
-app.listen(PORT);
+app.listen(PORT || DEFAULT_PORT);

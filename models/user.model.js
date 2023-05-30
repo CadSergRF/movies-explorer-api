@@ -2,28 +2,28 @@ const { Schema, model } = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const AuthError = require('../errors/Auth.error');
-const { AUTH_MESSAGE_DATA } = require('../utils/constants');
+const { AUTH_MESSAGE_DATA, VALID_EMAIL_MESSAGE } = require('../utils/message.constants');
 
 const userSchema = new Schema(
   {
     name: {
       type: String,
-      required: [true, 'Поле "name" должно быть заполнено'],
-      minlength: [2, 'Символов в названии должно быть от 2 до 30'],
-      maxlength: [30, 'Символов в названии должно быть от 2 до 30'],
+      required: true,
+      minlength: 2,
+      maxlength: 30,
     },
     email: {
       type: String,
-      required: [true, 'Поле "email" долдно быть заполнено'],
+      required: true,
       unique: true,
       validate: {
         validator: (email) => validator.isEmail(email),
-        message: 'Не корректный e-mail',
+        message: VALID_EMAIL_MESSAGE,
       },
     },
     password: {
       type: String,
-      required: [true, 'Поле "Пароль" должно быть заполнено'],
+      required: true,
       select: false,
     },
   },
@@ -34,13 +34,13 @@ const userSchema = new Schema(
         return this.findOne({ email }).select('+password')
           .then((user) => {
             if (!user) {
-              throw new AuthError(`${AUTH_MESSAGE_DATA}`);
+              throw new AuthError(AUTH_MESSAGE_DATA);
             }
             // Сравниваем пароли
             return bcrypt.compare(password, user.password)
               .then((matched) => {
                 if (!matched) {
-                  throw new AuthError(`${AUTH_MESSAGE_DATA}`);
+                  throw new AuthError(AUTH_MESSAGE_DATA);
                 }
                 return user;
               });

@@ -1,12 +1,14 @@
 const Movie = require('../models/movie.model');
 
+const { CREATED_CODE } = require('../utils/errorCode.constants');
+
 const {
-  CREATED_CODE,
   BAD_REQUEST_MESSAGE_DATA,
   BAD_REQUEST_MESSAGE_ID,
   FORBIDDEN_MESSAGE,
   NOT_FOUND_MESSAGE_MOVIE,
-} = require('../utils/constants');
+  DELETE_MOVIE_MESSAGE,
+} = require('../utils/message.constants');
 
 const ForbiddenError = require('../errors/Forbidden.error');
 const BadRequestError = require('../errors/BadRequest.error');
@@ -68,18 +70,18 @@ module.exports.deleteMovie = (req, res, next) => {
     .findById(req.params.id)
     .then((movie) => {
       if (!movie) {
-        throw new NotFoundError(`${NOT_FOUND_MESSAGE_MOVIE}`);
+        throw new NotFoundError(NOT_FOUND_MESSAGE_MOVIE);
       }
-      if (movie.owner !== req.user._id) {
-        throw new ForbiddenError(`${FORBIDDEN_MESSAGE}`);
+      if (movie.owner.toString() !== req.user._id) {
+        throw new ForbiddenError(FORBIDDEN_MESSAGE);
       }
       return Movie.deleteOne(movie)
-        .then(() => res.send({ message: 'Фильм удален' }))
+        .then(() => res.send({ message: DELETE_MOVIE_MESSAGE }))
         .catch(next);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError(`${BAD_REQUEST_MESSAGE_ID}`));
+        next(new BadRequestError(BAD_REQUEST_MESSAGE_ID));
       } else {
         next(err);
       }

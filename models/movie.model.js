@@ -1,68 +1,70 @@
 const { Schema, model } = require('mongoose');
 const validator = require('validator');
 
+const { VALID_URL_MESSAGE } = require('../utils/message.constants');
+
 const movieSchema = new Schema(
   {
     country: {
       type: String,
-      required: [true, 'Поле "Страна создания фильма" должно быть заполнено'],
+      required: true,
     },
     director: {
       type: String,
-      required: [true, 'Поле "Режиссёр фильма" должно быть заполнено'],
+      required: true,
     },
     duration: {
       type: Number,
-      required: [true, 'Поле "Длительность фильма" должно быть заполнено'],
+      required: true,
     },
     year: {
       type: String,
-      required: [true, 'Поле "Год выпуска фильма" должно быть заполнено'],
+      required: true,
     },
     description: {
       type: String,
-      required: [true, 'Поле "Описание" должно быть заполнено'],
+      required: true,
     },
     image: {
       type: String,
-      required: [true, 'Поле "Постер" должно быть заполнено'],
+      required: true,
       validate: {
         validator: (url) => validator.isURL(url),
-        message: '"Постер к фильму" - не корректный URL',
+        message: VALID_URL_MESSAGE,
       },
     },
     trailerLink: {
       type: String,
-      required: [true, 'Поле "Трейлер фильма" должно быть заполнено'],
+      required: true,
       validate: {
         validator: (url) => validator.isURL(url),
-        message: '"Трейлер фильма" - не корректный URL',
+        message: VALID_URL_MESSAGE,
       },
     },
     thumbnail: {
       type: String,
-      required: [true, 'Поле "Мини постер" должно быть заполнено'],
+      required: true,
       validate: {
         validator: (url) => validator.isURL(url),
-        message: '"Изображение постера к фильму" - не корректный URL',
+        message: VALID_URL_MESSAGE,
       },
     },
     owner: {
       type: Schema.Types.ObjectId,
       ref: 'user',
-      required: [true, 'Поле "Id пользователя" должно быть заполнено'],
+      required: true,
     },
     movieId: {
       type: Number,
-      required: [true, 'Поле "Id фильма" должно быть заполнено'],
+      required: true,
     },
     nameRU: {
       type: String,
-      required: [true, 'Поле "Название фильма (русский)" должно быть заполнено'],
+      required: true,
     },
     nameEN: {
       type: String,
-      required: [true, 'Поле "Название фильма (english)" должно быть заполнено'],
+      required: true,
     },
   },
   {
