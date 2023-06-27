@@ -5,6 +5,8 @@ const ALLOWED_CORS = [
   'https://api.movies-csrf.nomoredomains.rocks',
   'http://51.250.5.121',
   'https://51.250.5.121',
+  'http://localhost:3000',
+  'http://localhost:3001',
 ];
 
 module.exports = {

@@ -36,4 +36,7 @@ app
   .use(celebrateErrors())
   .use(errors);
 
-app.listen(PORT || DEFAULT_PORT);
+app.listen(PORT || DEFAULT_PORT, () => {
+  // eslint-disable-next-line no-console
+  console.log(`App listening on port ${PORT} ${DEFAULT_PORT}`);
+});
